@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { Screen } from '@/components/layout/Screen';
 import { Button } from '@/components/ui';
@@ -33,11 +34,17 @@ export default function Introduction() {
           <Text style={{ color: colors.textSecondary }}>Lewati</Text>
         </Pressable>
       </View>
-      <View style={{ alignItems: 'center', gap: spacing.md }}>
-        {/* key memaksa animasi diputar ulang hanya untuk halaman yang sedang aktif */}
-        <DrawOnIllustration key={page} name={current.art} size={220} />
-        <Text accessibilityRole="header" style={{ color: colors.text, fontSize: 24, fontWeight: '600', textAlign: 'center' }}>{current.title}</Text>
-        <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>{current.body}</Text>
+      {/* key = halaman: ilustrasi dan teks dibuat ulang (dan animasinya diputar) hanya untuk halaman aktif.
+          Tombol tidak menunggu animasi; pengguna boleh lanjut kapan saja. */}
+      <View key={page} style={{ alignItems: 'center', gap: spacing.md }}>
+        <Animated.View entering={FadeIn.duration(900)}>
+          <DrawOnIllustration name={current.art} size={240} />
+        </Animated.View>
+        {/* Teks muncul pelan setelah garis mulai tergambar, bukan serentak. */}
+        <Animated.View entering={FadeInDown.duration(1100).delay(700)} style={{ alignItems: 'center', gap: spacing.md }}>
+          <Text accessibilityRole="header" style={{ color: colors.text, fontSize: 24, fontWeight: '600', textAlign: 'center' }}>{current.title}</Text>
+          <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>{current.body}</Text>
+        </Animated.View>
       </View>
       <Text style={{ color: colors.textSecondary, textAlign: 'center' }} accessibilityLabel={`Halaman ${page + 1} dari ${PAGES.length}`}>
         {PAGES.map((_, i) => (i === page ? '● ' : '○ ')).join('')}

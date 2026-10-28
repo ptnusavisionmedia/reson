@@ -2,9 +2,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
-import { ErrorState, Loading } from '@/components/ui';
+import { ErrorState } from '@/components/ui';
+import { Logo } from '@/components/ui/Logo';
 import { DeletionResume } from '@/features/account/DeletionResume';
 import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 import { colors } from '@/theme';
@@ -27,8 +28,9 @@ function RootNavigator() {
   }
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <Loading />
+      <View style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+        <Logo size={96} />
+        <ActivityIndicator color={colors.accent} accessibilityLabel="Memuat" />
       </View>
     );
   }

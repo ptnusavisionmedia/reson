@@ -8,6 +8,7 @@
     "scheme": "reson",
     "userInterfaceStyle": "dark",
     "android": {
+      "package": "com.nusavision.reson",
       "adaptiveIcon": {
         "backgroundColor": "#111214",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

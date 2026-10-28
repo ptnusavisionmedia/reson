@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kebijakan Privasi — Reson</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <nav aria-label="Halaman"><a href="index.html">Beranda</a><a href="delete-account.html">Penghapusan akun</a></nav>
+
+    <div class="draft" role="note">
+      <strong>DRAF — belum boleh dipublikasikan.</strong>
+      Bagian bertanda <code>&#91;&#91;ISI: …&#93;&#93;</code> harus diisi pemilik layanan dengan data yang benar
+      (identitas pengelola, kontak, tanggal, dan keputusan retensi). Jalankan <code>npm run check:legal</code>
+      sebelum dipublikasikan; perintah itu gagal selama masih ada bagian yang kosong.
+    </div>
+
+    <h1>Kebijakan Privasi</h1>
+    <p class="muted">Berlaku sejak: [[ISI: tanggal berlaku]]</p>
+
+    <h2>1. Siapa kami</h2>
+    <p>
+      Reson adalah aplikasi komunitas audio. Pengelola layanan: [[ISI: nama pengelola / badan]],
+      alamat: [[ISI: alamat pengelola]]. Kontak untuk pertanyaan privasi dan permintaan data:
+      [[ISI: alamat email dukungan]].
+    </p>
+
+    <h2>2. Data yang kami kumpulkan</h2>
+    <p>Hanya data yang kamu berikan saat memakai aplikasi:</p>
+    <ul>
+      <li><strong>Akun:</strong> alamat email dan password. Password disimpan oleh penyedia autentikasi dalam bentuk hash; kami tidak bisa membacanya.</li>
+      <li><strong>Profil:</strong> username, nama tampilan, bio, dan foto profil.</li>
+      <li><strong>Sound Profile:</strong> genre, preferensi bass/vokal/treble, konteks mendengarkan, dan pilihan apakah kamu ikut Match.</li>
+      <li><strong>Konten:</strong> post (diskusi, pertanyaan, review, showcase), foto post, komentar, dan like.</li>
+      <li><strong>Hubungan:</strong> siapa yang kamu ikuti dan pengikutmu, komunitas yang kamu ikuti, dan pengguna yang kamu blokir.</li>
+      <li><strong>Daftar perangkat:</strong> perangkat yang kamu tandai Punya atau Incar, serta usulan perangkat yang kamu kirim.</li>
+      <li><strong>Simpanan:</strong> post yang kamu simpan.</li>
+      <li><strong>Notifikasi dalam aplikasi</strong> dan pengaturannya.</li>
+      <li><strong>Hasil Match:</strong> dihitung dari Sound Profile dan disimpan sementara (maksimal 24 jam sebelum dihitung ulang).</li>
+      <li><strong>Laporan moderasi:</strong> laporan yang kamu kirim, dan laporan tentang kontenmu.</li>
+      <li><strong>Data teknis:</strong> penyedia infrastruktur kami dapat mencatat data teknis permintaan (misalnya alamat IP) untuk operasional dan keamanan.</li>
+    </ul>
+    <p>Saat ini kami <strong>tidak</strong> mengumpulkan lokasi, kontak, atau riwayat musik yang kamu dengarkan, tidak memakai iklan atau analitik pihak ketiga, dan tidak mengirim push notification.</p>
+
+    <h2>3. Siapa yang bisa melihat apa</h2>
+    <table>
+      <thead><tr><th>Data</th><th>Terlihat oleh</th></tr></thead>
+      <tbody>
+        <tr><td>Email dan password</td><td>Hanya kamu (dan penyedia autentikasi). Email tidak ditampilkan di profil.</td></tr>
+        <tr><td>Profil, post, komentar</td><td>Pengguna Reson yang sudah masuk. Konten belum dapat dibaca tanpa akun.</td></tr>
+        <tr><td>Sound Profile</td><td>Pengguna lain hanya bila kamu mengaktifkan opsi tampil di Match.</td></tr>
+        <tr><td>Daftar Punya/Incar, simpanan, daftar blokir, notifikasi, hasil Match</td><td>Hanya kamu.</td></tr>
+        <tr><td>Laporan moderasi</td><td>Pelapor melihat laporannya sendiri; moderator melihat seluruh laporan.</td></tr>
+      </tbody>
+    </table>
+    <p>Foto avatar dapat dibuka siapa pun yang mengetahui alamat berkasnya, karena disimpan sebagai berkas publik. Foto post hanya dapat dibaca pengguna yang sudah masuk selama post-nya tampil.</p>
+
+    <h2>4. Bagaimana data dipakai</h2>
+    <ul>
+      <li>Menjalankan fitur aplikasi: masuk, profil, komunitas, post, komentar, dan notifikasi.</li>
+      <li>Taste Match: kecocokan selera dihitung otomatis dari Sound Profile dan hanya bila kamu ikut. Hasilnya bukan penilaian kemampuan atau kepribadian.</li>
+      <li>Moderasi dan keamanan: menindaklanjuti laporan dan mencegah penyalahgunaan.</li>
+    </ul>
+
+    <h2>5. Penyimpanan dan penyedia layanan</h2>
+    <p>
+      Data disimpan pada Supabase (basis data, autentikasi, dan penyimpanan berkas). Wilayah penyimpanan:
+      [[ISI: konfirmasi wilayah proyek Supabase]]. Kami tidak menjual data pribadimu.
+    </p>
+
+    <h2>6. Penghapusan data</h2>
+    <p>Kamu dapat menghapus akun kapan saja: <em>Profil → Pengaturan → Hapus akun</em>, atau lewat <a href="delete-account.html">halaman permintaan penghapusan akun</a>.</p>
+    <p><strong>Yang dihapus:</strong> akun, profil, Sound Profile, seluruh post beserta fotonya (komentar orang lain pada post itu ikut hilang), komentar, like, simpanan, daftar perangkat, blokir, notifikasi, hasil Match, hubungan ikuti, dan keanggotaan komunitas.</p>
+    <p><strong>Yang tetap ada, dan alasannya:</strong></p>
+    <ul>
+      <li>Balasan orang lain di komentar utamamu tetap ada di bawah komentar yang ditandai dihapus, tanpa isi dan tanpa namamu, agar percakapan orang lain tidak rusak.</li>
+      <li>Laporan moderasi tentang kamu atau yang kamu kirim dipertahankan tanpa identitas pelapor, bersama catatan tindakan moderator (identitas moderator, ID target, dan alasan), untuk keperluan keamanan dan penanganan penyalahgunaan. Lama penyimpanan: [[ISI: periode retensi catatan moderasi]].</li>
+      <li>Catatan proses penghapusan akun (ID akun, status, dan waktu) dipertahankan sebagai bukti bahwa penghapusan telah dilakukan.</li>
+      <li>Salinan cadangan oleh penyedia infrastruktur: [[ISI: kebijakan cadangan dan lamanya, atau tulis bahwa tidak ada]].</li>
+    </ul>
+
+    <h2>7. Hak kamu</h2>
+    <p>Kamu dapat meminta akses, perbaikan, atau penghapusan data pribadimu dengan menghubungi [[ISI: alamat email dukungan]] dari alamat email yang terdaftar. Kami menanggapi paling lambat dalam [[ISI: batas waktu tanggapan]].</p>
+
+    <h2>8. Pengguna anak</h2>
+    <p>Batas usia minimal memakai Reson: [[ISI: usia minimal]].</p>
+
+    <h2>9. Perubahan kebijakan</h2>
+    <p>Perubahan material diumumkan di aplikasi atau lewat halaman ini, dengan tanggal berlaku yang diperbarui di bagian atas.</p>
+  </main>
+</body>
+</html>

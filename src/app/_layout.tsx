@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { ErrorState } from '@/components/ui';
 import { Logo } from '@/components/ui/Logo';
+import { UpdateBanner } from '@/features/updates/UpdateBanner';
 import { DeletionResume } from '@/features/account/DeletionResume';
 import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 import { colors } from '@/theme';
@@ -60,6 +61,7 @@ export default function RootLayout() {
     <AuthProvider>
       <StatusBar style="light" />
       <RootNavigator />
+      <UpdateBanner />
     </AuthProvider>
   );
 }

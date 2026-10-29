@@ -43,6 +43,12 @@
         "projectId": "00476ab4-4253-4e16-a335-114f704c65ce"
       }
     },
-    "owner": "nusaaplikasis-team"
+    "owner": "nusaaplikasis-team",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/00476ab4-4253-4e16-a335-114f704c65ce"
+    }
   }
 }

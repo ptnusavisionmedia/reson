@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { Button, Card, ErrorState, Loading } from '@/components/ui';
 import { supabase } from '@/lib/supabase/client';
 import { deleteAccountUrl, privacyUrl, supportEmail } from '@/config/env';
+import { AboutCard } from '@/features/updates/AboutCard';
 import { useAuth } from '@/providers/AuthProvider';
 import { colors, minTouchTarget, spacing } from '@/theme';
 import { normalizePreferences, type NotificationKey, type NotificationPreferences } from '@shared/validation/profile';
@@ -73,6 +74,7 @@ export default function Settings() {
       {!!deleteAccountUrl && <Button title="Permintaan penghapusan akun (web)" variant="secondary" onPress={() => Linking.openURL(deleteAccountUrl)} />}
       {!!supportEmail && <Button title="Hubungi dukungan" variant="secondary" onPress={() => Linking.openURL(`mailto:${supportEmail}`)} />}
       <Button title="Hapus akun" variant="secondary" onPress={() => router.push('/settings/delete-account')} />
+      <AboutCard />
       {!!message && <Text style={{ color: colors.accent }} accessibilityRole="alert">{message}</Text>}
     </Screen>
   );

@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 
 import { Screen } from '@/components/layout/Screen';
 import { Button, Input } from '@/components/ui';
+import { authRedirectUrl } from '@/features/auth/authLinks';
 import { authErrorMessage } from '@/features/auth/errors';
 import { supabase } from '@/lib/supabase/client';
 import { colors } from '@/theme';
@@ -23,7 +24,7 @@ export default function ForgotPassword() {
     if (!parsed.success) return setError(fieldErrors(parsed.error).email);
     setError(undefined);
     setSubmitting(true);
-    const { error: err } = await supabase.auth.resetPasswordForEmail(parsed.data.email);
+    const { error: err } = await supabase.auth.resetPasswordForEmail(parsed.data.email, { redirectTo: authRedirectUrl() });
     setSubmitting(false);
     // Respons sama untuk email terdaftar maupun tidak, agar tidak membocorkan akun.
     if (err && err.code !== 'user_not_found') return setFormError(authErrorMessage(err));

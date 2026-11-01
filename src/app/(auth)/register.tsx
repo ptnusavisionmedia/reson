@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { Screen } from '@/components/layout/Screen';
 import { Button, Input } from '@/components/ui';
 import { Logo } from '@/components/ui/Logo';
+import { authRedirectUrl } from '@/features/auth/authLinks';
 import { authErrorMessage } from '@/features/auth/errors';
 import { GoogleButton, OrDivider } from '@/features/auth/GoogleButton';
 import { supabase } from '@/lib/supabase/client';
@@ -34,7 +35,10 @@ export default function Register() {
       const { data, error } = await supabase.auth.signUp({
         email: parsed.data.email,
         password: parsed.data.password,
-        options: { data: { username: parsed.data.username, display_name: parsed.data.displayName } },
+        options: {
+          data: { username: parsed.data.username, display_name: parsed.data.displayName },
+          emailRedirectTo: authRedirectUrl(),
+        },
       });
       if (error) return setFormError(authErrorMessage(error));
       // Tanpa sesi = menunggu verifikasi email. Dengan sesi, guard yang memindahkan layar.

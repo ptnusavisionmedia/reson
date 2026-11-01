@@ -1,7 +1,8 @@
-import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
 import { supabase } from '@/lib/supabase/client';
+
+import { authRedirectUrl, exchangeCode } from './authLinks';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -15,7 +16,7 @@ const FAILED = 'Tidak bisa masuk dengan Google. Coba lagi atau gunakan email.';
  * Sesi dibuat lewat exchangeCodeForSession; AuthProvider menangkapnya dan guard memindahkan layar.
  */
 export async function signInWithGoogle(loginHint?: string): Promise<GoogleResult> {
-  const redirectTo = Linking.createURL('auth/callback');
+  const redirectTo = authRedirectUrl();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -34,7 +35,7 @@ export async function signInWithGoogle(loginHint?: string): Promise<GoogleResult
   const code = params.get('code');
   if (!code) return { status: 'error', message: FAILED };
 
-  const exchanged = await supabase.auth.exchangeCodeForSession(code);
-  if (exchanged.error || !exchanged.data.user) return { status: 'error', message: FAILED };
-  return { status: 'ok', userId: exchanged.data.user.id };
+  const exchanged = await exchangeCode(code);
+  if (!exchanged.ok || !exchanged.userId) return { status: 'error', message: FAILED };
+  return { status: 'ok', userId: exchanged.userId };
 }

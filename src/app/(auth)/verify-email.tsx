@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 
 import { Screen } from '@/components/layout/Screen';
 import { Button } from '@/components/ui';
+import { authRedirectUrl } from '@/features/auth/authLinks';
 import { authErrorMessage } from '@/features/auth/errors';
 import { supabase } from '@/lib/supabase/client';
 import { colors } from '@/theme';
@@ -26,7 +27,7 @@ export default function VerifyEmail() {
     if (!email || sending || cooldown > 0) return;
     setSending(true);
     setMessage(null);
-    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    const { error } = await supabase.auth.resend({ type: 'signup', email, options: { emailRedirectTo: authRedirectUrl() } });
     setSending(false);
     if (error) return setMessage(authErrorMessage(error));
     setCooldown(COOLDOWN_SECONDS);

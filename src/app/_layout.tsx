@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { ErrorState } from '@/components/ui';
 import { Logo } from '@/components/ui/Logo';
+import { AuthLinkBanner } from '@/features/auth/AuthLinkBanner';
 import { UpdateBanner } from '@/features/updates/UpdateBanner';
 import { DeletionResume } from '@/features/account/DeletionResume';
 import { AuthProvider, useAuth } from '@/providers/AuthProvider';
@@ -14,7 +15,7 @@ import { colors } from '@/theme';
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
-  const { loading, bootstrapError, retry, session, onboardingCompleted, profileCompleted, accountStatus } = useAuth();
+  const { loading, bootstrapError, retry, session, onboardingCompleted, profileCompleted, recovering, accountStatus } = useAuth();
 
   useEffect(() => {
     if (!loading || bootstrapError) SplashScreen.hideAsync();
@@ -46,13 +47,16 @@ function RootNavigator() {
       <Stack.Protected guard={!session}>
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
-      <Stack.Protected guard={!!session && !profileCompleted}>
+      <Stack.Protected guard={!!session && recovering}>
+        <Stack.Screen name="update-password" />
+      </Stack.Protected>
+      <Stack.Protected guard={!!session && !recovering && !profileCompleted}>
         <Stack.Screen name="complete-profile" />
       </Stack.Protected>
-      <Stack.Protected guard={!!session && profileCompleted && !onboardingCompleted}>
+      <Stack.Protected guard={!!session && !recovering && profileCompleted && !onboardingCompleted}>
         <Stack.Screen name="(onboarding)" />
       </Stack.Protected>
-      <Stack.Protected guard={!!session && profileCompleted && onboardingCompleted}>
+      <Stack.Protected guard={!!session && !recovering && profileCompleted && onboardingCompleted}>
         <Stack.Screen name="(main)" />
       </Stack.Protected>
     </Stack>
@@ -65,6 +69,7 @@ export default function RootLayout() {
       <StatusBar style="light" />
       <RootNavigator />
       <UpdateBanner />
+      <AuthLinkBanner />
     </AuthProvider>
   );
 }

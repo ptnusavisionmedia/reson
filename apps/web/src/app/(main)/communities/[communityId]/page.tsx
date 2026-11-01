@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
 
@@ -37,6 +38,11 @@ export default async function CommunityDetailPage({ params }: { params: Promise<
         <p className="text-sm text-muted">{community.member_count} anggota</p>
         <div className="flex flex-wrap items-start gap-3">
           <JoinButton communityId={community.id} joined={joined} />
+          {joined && (
+            <Link href={`/posts/new?communityId=${community.id}`} className="flex min-h-11 items-center rounded-md bg-accent px-5 font-medium text-bg">
+              Buat post
+            </Link>
+          )}
         </div>
         {!joined && <p className="text-sm text-muted">Gabung untuk membuat post di komunitas ini.</p>}
       </header>

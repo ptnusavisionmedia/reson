@@ -5,6 +5,9 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { createClient } from '@/lib/supabase/server';
+import type { Json } from '@db';
+import { bodyRequiredError, POST_LIMITS, postInputSchema, TEXT_REQUIRED_TYPES } from '@shared/validation/post';
+import { reviewDetailsSchema, showcaseDetailsSchema } from '@shared/validation/postDetails';
 import { serverErrorMessage } from '@utils/errors';
 
 export async function signOut() {
@@ -40,6 +43,48 @@ export async function setSaved(postId: string, saved: boolean): Promise<ActionRe
     ? await a.supabase.from('saved_posts').upsert({ post_id: postId, user_id: a.userId }, { onConflict: 'user_id,post_id', ignoreDuplicates: true })
     : await a.supabase.from('saved_posts').delete().eq('post_id', postId).eq('user_id', a.userId);
   return error ? { error: serverErrorMessage(error) } : {};
+}
+
+const publishSchema = postInputSchema.extend({ id: z.uuid(), imagePaths: z.array(z.string()).max(POST_LIMITS.images), details: z.record(z.string(), z.unknown()) });
+
+/**
+ * Terbitkan post. `id` dibuat klien dan dipakai ulang saat retry, sehingga server tidak membuat duplikat.
+ * Validasi diulang di sini; RPC create_post tetap penentu akhir (keanggotaan, verifikasi, rate limit).
+ */
+export async function publishPost(input: z.input<typeof publishSchema>): Promise<ActionResult<{ id: string }>> {
+  const parsed = publishSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const p = parsed.data;
+  if (TEXT_REQUIRED_TYPES.includes(p.type) && !p.body) return { error: bodyRequiredError };
+  if (p.type === 'review') {
+    const r = reviewDetailsSchema.safeParse(p.details);
+    if (!r.success) return { error: r.error.issues[0].message };
+  } else if (p.type === 'showcase') {
+    const r = showcaseDetailsSchema.safeParse(p.details);
+    if (!r.success) return { error: r.error.issues[0].message };
+  }
+
+  const a = await authed(p.id);
+  if (a.error !== undefined) return { error: a.error };
+  // Foto harus berada di folder milik pengguna ini untuk post ini.
+  const prefix = `${a.userId}/${p.id}/`;
+  if (!p.imagePaths.every((path) => path.startsWith(prefix) && /^[0-9a-f-]{36}\.jpg$/.test(path.slice(prefix.length)))) {
+    return { error: 'Foto tidak valid. Hapus lalu unggah ulang.' };
+  }
+
+  const { data, error } = await a.supabase.rpc('create_post', {
+    p_id: p.id,
+    p_community_id: p.communityId,
+    p_type: p.type,
+    p_title: p.title,
+    p_body: p.body,
+    p_image_paths: p.imagePaths,
+    p_details: p.details as Json,
+  });
+  if (error) return { error: serverErrorMessage(error) };
+  revalidatePath('/home');
+  revalidatePath(`/communities/${p.communityId}`);
+  return { id: data.id };
 }
 
 const commentBody = z.string().trim().min(1, 'Komentar tidak boleh kosong.').max(1000, 'Komentar maksimal 1.000 karakter.');

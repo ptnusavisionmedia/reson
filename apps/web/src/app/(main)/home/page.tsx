@@ -19,7 +19,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <h1 className="mb-4 text-2xl font-semibold">Beranda</h1>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">Beranda</h1>
+        <Link href="/posts/new" className="flex min-h-11 items-center rounded-md bg-accent px-5 font-medium text-bg">
+          Buat post
+        </Link>
+      </div>
       <div role="tablist" aria-label="Jenis feed" className="mb-4 flex gap-2">
         {TABS.map((t) => {
           const selected = t.id === active;

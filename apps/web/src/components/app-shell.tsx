@@ -1,10 +1,8 @@
-import { LogOut } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { signOut } from '@/app/actions';
-
 import { BottomNav, SideNav } from './nav';
+import { SignOutButton } from './sign-out-button';
 
 /** Kerangka halaman masuk: sidebar (desktop), rail (tablet), bottom nav (HP). */
 export function AppShell({ username, children }: { username: string | null; children: ReactNode }) {
@@ -20,16 +18,7 @@ export function AppShell({ username, children }: { username: string | null; chil
         </div>
         <div className="flex flex-col gap-1">
           {username && <p className="hidden truncate px-3 text-sm text-muted lg:block">@{username}</p>}
-          <form action={signOut}>
-            <button
-              type="submit"
-              aria-label="Keluar"
-              className="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-muted hover:bg-surface hover:text-fg"
-            >
-              <LogOut size={20} aria-hidden />
-              <span className="hidden lg:inline">Keluar</span>
-            </button>
-          </form>
+          <SignOutButton />
         </div>
       </aside>
       <main className="mx-auto w-full max-w-2xl px-4 py-6 pb-24 md:pb-10">{children}</main>

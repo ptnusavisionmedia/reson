@@ -53,7 +53,7 @@ export default function RegisterPage() {
     return (
       <AuthShell title="Cek email Anda">
         <p className="text-muted">Kami mengirim tautan verifikasi ke {sentTo}. Buka tautan itu untuk melanjutkan.</p>
-        <Link href="/login" className="py-2 text-accent">Kembali ke Masuk</Link>
+        <Link href="/login" className="flex min-h-11 items-center text-accent">Kembali ke Masuk</Link>
       </AuthShell>
     );
   }
@@ -70,7 +70,7 @@ export default function RegisterPage() {
         <FormError message={formError} />
         <SubmitButton loading={loading}>Daftar</SubmitButton>
       </form>
-      <Link href="/login" className="py-2 text-sm text-accent">Sudah punya akun? Masuk</Link>
+      <Link href="/login" className="flex min-h-11 items-center text-sm text-accent">Sudah punya akun? Masuk</Link>
     </AuthShell>
   );
 }

@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
           <SubmitButton loading={loading}>Kirim tautan</SubmitButton>
         </form>
       )}
-      <Link href="/login" className="py-2 text-sm text-accent">Kembali ke Masuk</Link>
+      <Link href="/login" className="flex min-h-11 items-center text-sm text-accent">Kembali ke Masuk</Link>
     </AuthShell>
   );
 }

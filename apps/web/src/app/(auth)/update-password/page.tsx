@@ -52,7 +52,7 @@ export default function UpdatePasswordPage() {
         <FormError message={formError} />
         <SubmitButton loading={loading}>Simpan</SubmitButton>
       </form>
-      <Link href="/forgot-password" className="py-2 text-sm text-muted">Minta tautan baru</Link>
+      <Link href="/forgot-password" className="flex min-h-11 items-center text-sm text-muted">Minta tautan baru</Link>
     </AuthShell>
   );
 }

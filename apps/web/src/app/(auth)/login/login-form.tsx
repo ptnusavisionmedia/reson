@@ -51,8 +51,8 @@ export function LoginForm({ returnTo, callbackError, accountDeleted }: { returnT
         <SubmitButton loading={loading}>Masuk</SubmitButton>
       </form>
       <div className="flex flex-col gap-1 text-sm">
-        <Link href="/forgot-password" className="py-2">Lupa password?</Link>
-        <Link href="/register" className="py-2 text-accent">Belum punya akun? Daftar</Link>
+        <Link href="/forgot-password" className="flex min-h-11 items-center">Lupa password?</Link>
+        <Link href="/register" className="flex min-h-11 items-center text-accent">Belum punya akun? Daftar</Link>
       </div>
     </AuthShell>
   );

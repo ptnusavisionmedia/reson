@@ -46,6 +46,7 @@ export type Database = {
           intro_seen: boolean
           notification_preferences: Json
           onboarding_completed: boolean
+          profile_completed: boolean
           role: Database["public"]["Enums"]["app_role"]
         }
         Insert: {
@@ -54,6 +55,7 @@ export type Database = {
           intro_seen?: boolean
           notification_preferences?: Json
           onboarding_completed?: boolean
+          profile_completed?: boolean
           role?: Database["public"]["Enums"]["app_role"]
         }
         Update: {
@@ -62,6 +64,7 @@ export type Database = {
           intro_seen?: boolean
           notification_preferences?: Json
           onboarding_completed?: boolean
+          profile_completed?: boolean
           role?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
@@ -844,6 +847,10 @@ export type Database = {
       admin_delete_account: { Args: { p_uid: string }; Returns: string }
       block_user: { Args: { p_user_id: string }; Returns: undefined }
       complete_onboarding: { Args: never; Returns: undefined }
+      finalize_profile: {
+        Args: { p_display_name: string; p_username: string }
+        Returns: undefined
+      }
       create_comment: {
         Args: {
           p_body: string

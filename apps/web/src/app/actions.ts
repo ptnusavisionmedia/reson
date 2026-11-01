@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 import type { Json } from '@db';
 import { bodyRequiredError, POST_LIMITS, postInputSchema, TEXT_REQUIRED_TYPES } from '@shared/validation/post';
 import { reviewDetailsSchema, showcaseDetailsSchema } from '@shared/validation/postDetails';
+import { soundProfileSchema, type SoundProfileInput } from '@shared/validation/soundProfile';
 import { serverErrorMessage } from '@utils/errors';
 
 export async function signOut() {
@@ -136,6 +137,57 @@ export async function removePost(postId: string): Promise<ActionResult> {
   if (data?.length) await a.supabase.storage.from('post-images').remove(data);
   revalidatePath('/home');
   redirect('/home');
+}
+
+/** Simpan Sound Profile. Validasi final ada di RPC save_sound_profile. */
+export async function saveSoundProfile(input: SoundProfileInput): Promise<ActionResult> {
+  const parsed = soundProfileSchema.safeParse(input);
+  if (!parsed.success) return { error: 'Jawaban tidak valid. Periksa kembali pilihan Anda.' };
+  const a = await authed();
+  if (a.error !== undefined) return { error: a.error };
+  const p = parsed.data;
+  const { error } = await a.supabase.rpc('save_sound_profile', {
+    p_genres: p.genres,
+    p_bass: p.bass as number,
+    p_vocals: p.vocals as number,
+    p_treble: p.treble as number,
+    p_contexts: p.contexts,
+    p_discoverable: p.discoverable,
+  });
+  if (error) return { error: 'Gagal menyimpan. Periksa koneksi lalu coba lagi.' };
+  revalidatePath('/match');
+  revalidatePath('/quiz-result');
+  revalidatePath(`/users/${a.userId}`);
+  return {};
+}
+
+export async function completeOnboarding(): Promise<ActionResult> {
+  const a = await authed();
+  if (a.error !== undefined) return { error: a.error };
+  const { error } = await a.supabase.rpc('complete_onboarding');
+  if (error) return { error: 'Tidak bisa menyelesaikan. Periksa koneksi lalu coba lagi.' };
+  return {};
+}
+
+/** Non-kritis: gagal tidak menghalangi alur. */
+export async function markIntroSeen(): Promise<void> {
+  const a = await authed();
+  if (a.error === undefined) await a.supabase.rpc('mark_intro_seen');
+}
+
+/** Hanya penerima yang bisa mengubah read_at miliknya (RLS dan hak kolom). */
+export async function markNotificationRead(id: string): Promise<ActionResult> {
+  const a = await authed(id);
+  if (a.error !== undefined) return { error: a.error };
+  const { error } = await a.supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id).eq('user_id', a.userId);
+  return error ? { error: 'Gagal menandai dibaca. Coba lagi.' } : {};
+}
+
+export async function markAllNotificationsRead(): Promise<ActionResult> {
+  const a = await authed();
+  if (a.error !== undefined) return { error: a.error };
+  const { error } = await a.supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', a.userId).is('read_at', null);
+  return error ? { error: 'Gagal menandai semua dibaca. Coba lagi.' } : {};
 }
 
 /** Perbarui Match secara paksa. Server tetap menerapkan batas laju dan menjawab 'cooldown'. */

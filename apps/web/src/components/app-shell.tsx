@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { BottomNav, SideNav } from './nav';
+import { BottomNav, MobileBell, SideNav } from './nav';
 import { SignOutButton } from './sign-out-button';
 
-/** Kerangka halaman masuk: sidebar (desktop), rail (tablet), bottom nav (HP). */
-export function AppShell({ username, children }: { username: string | null; children: ReactNode }) {
+/** Kerangka halaman masuk: sidebar (desktop), rail (tablet), bilah atas dan bottom nav (HP). */
+export function AppShell({ userId, username, children }: { userId: string; username: string | null; children: ReactNode }) {
   return (
     <div className="min-h-screen md:grid md:grid-cols-[72px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
       <aside className="sticky top-0 hidden h-screen flex-col justify-between border-r border-line p-3 md:flex">
@@ -14,14 +14,22 @@ export function AppShell({ username, children }: { username: string | null; chil
             <span className="lg:hidden">R</span>
             <span className="hidden lg:inline">RESON</span>
           </Link>
-          <SideNav />
+          <SideNav userId={userId} />
         </div>
         <div className="flex flex-col gap-1">
           {username && <p className="hidden truncate px-3 text-sm text-muted lg:block">@{username}</p>}
           <SignOutButton />
         </div>
       </aside>
-      <main className="mx-auto w-full max-w-2xl px-4 py-6 pb-24 md:pb-10">{children}</main>
+      <div className="min-w-0">
+        <header className="flex items-center justify-between border-b border-line px-4 py-1 md:hidden">
+          <Link href="/home" className="font-mono text-sm tracking-widest text-accent">
+            RESON
+          </Link>
+          <MobileBell userId={userId} />
+        </header>
+        <main className="mx-auto w-full max-w-2xl px-4 py-6 pb-24 md:pb-10">{children}</main>
+      </div>
       <BottomNav />
     </div>
   );

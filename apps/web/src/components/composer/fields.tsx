@@ -49,13 +49,14 @@ export function TextInput({ label, error, ...props }: { label: string; error?: s
   );
 }
 
-export function Choice({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+export function Choice({ label, selected, onClick, disabled }: { label: string; selected: boolean; onClick: () => void; disabled?: boolean }) {
   return (
     <button
       type="button"
       aria-pressed={selected}
+      disabled={disabled}
       onClick={onClick}
-      className={`min-h-11 rounded-md bg-surface px-4 ${selected ? 'border-2 border-accent' : 'border border-line-strong'}`}
+      className={`min-h-11 rounded-md bg-surface px-4 disabled:opacity-40 ${selected ? 'border-2 border-accent' : 'border border-line-strong'}`}
     >
       {selected ? `✓ ${label}` : label}
     </button>

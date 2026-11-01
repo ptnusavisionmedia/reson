@@ -66,7 +66,14 @@ export default async function UserPage({ params, searchParams }: { params: Promi
           {p.follower_count} pengikut • {p.following_count} mengikuti
         </p>
         {!isSelf && <FollowButton targetId={p.id} initialFollowing={!!follow.data} />}
-        {isSelf && <p className="text-sm text-muted">Ini profilmu. Ubah profil dan Sound Profile masih lewat aplikasi.</p>}
+        {isSelf && (
+          <div className="flex flex-col gap-2">
+            <Link href="/settings/sound-profile" className="flex min-h-11 w-fit items-center rounded-md border border-line-strong px-5">
+              Ubah Sound Profile
+            </Link>
+            <p className="text-sm text-muted">Ubah foto, nama, dan bio masih lewat aplikasi.</p>
+          </div>
+        )}
       </header>
 
       {sound?.success && (

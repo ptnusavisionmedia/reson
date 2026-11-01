@@ -33,7 +33,9 @@ export default async function MatchPage({ searchParams }: { searchParams: Promis
         <div className="mt-6">
           <EmptyState
             title="Lengkapi Sound Profile"
-            message="Jawab kuis singkat agar kami bisa mencarikan pendengar dengan selera mirip. Untuk saat ini, kuis tersedia di aplikasi Reson."
+            message="Jawab kuis singkat agar kami bisa mencarikan pendengar dengan selera mirip."
+            href="/settings/sound-profile"
+            actionLabel="Buka kuis"
           />
         </div>
       </>
@@ -46,7 +48,9 @@ export default async function MatchPage({ searchParams }: { searchParams: Promis
         <div className="mt-6">
           <EmptyState
             title="Match dinonaktifkan"
-            message="Kamu menyembunyikan Sound Profile, jadi tidak ikut Match. Aktifkan lagi lewat Ubah Sound Profile di aplikasi."
+            message="Kamu menyembunyikan Sound Profile, jadi tidak ikut Match. Aktifkan lagi lewat Ubah Sound Profile."
+            href="/settings/sound-profile"
+            actionLabel="Ubah Sound Profile"
           />
         </div>
       </>

@@ -31,11 +31,13 @@ export function Composer({
   communities,
   initialCommunityId,
   initialType,
+  initialDevice,
 }: {
   uid: string;
   communities: Community[];
   initialCommunityId?: string;
   initialType?: PostType;
+  initialDevice?: { id: string; name: string };
 }) {
   const router = useRouter();
   const [postId] = useState(() => crypto.randomUUID()); // satu ID per composer = kunci idempotensi
@@ -71,8 +73,9 @@ export function Composer({
       if (d.showcase) setShowcase({ ...emptyShowcase, ...d.showcase });
       setCommunityId((current) => current ?? (communities.some((c) => c.id === d.communityId) ? (d.communityId ?? undefined) : undefined));
     }
+    if (initialDevice) setReview((r) => ({ ...r, device: initialDevice }));
     setHydrated(true);
-  }, [uid, initialType, communities]);
+  }, [uid, initialType, initialDevice, communities]);
 
   useEffect(() => {
     if (!hydrated) return;

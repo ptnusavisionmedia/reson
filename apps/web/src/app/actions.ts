@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
+import { refreshMatches } from '@/lib/data/match';
 import { createClient } from '@/lib/supabase/server';
 import type { Json } from '@db';
 import { bodyRequiredError, POST_LIMITS, postInputSchema, TEXT_REQUIRED_TYPES } from '@shared/validation/post';
@@ -135,6 +136,28 @@ export async function removePost(postId: string): Promise<ActionResult> {
   if (data?.length) await a.supabase.storage.from('post-images').remove(data);
   revalidatePath('/home');
   redirect('/home');
+}
+
+/** Perbarui Match secara paksa. Server tetap menerapkan batas laju dan menjawab 'cooldown'. */
+export async function forceRefreshMatches(): Promise<{ status: 'ok' | 'cooldown' | 'no_profile' | 'disabled' | 'error' }> {
+  const a = await authed();
+  if (a.error !== undefined) return { status: 'error' };
+  const status = await refreshMatches(a.supabase, true);
+  if (status === 'ok') revalidatePath('/match');
+  return { status };
+}
+
+/** Ikuti/berhenti mengikuti. Idempoten di server. */
+export async function setFollow(targetId: string, follow: boolean): Promise<ActionResult> {
+  const a = await authed(targetId);
+  if (a.error !== undefined) return { error: a.error };
+  const { error } = follow
+    ? await a.supabase.rpc('follow_user', { p_user_id: targetId })
+    : await a.supabase.rpc('unfollow_user', { p_user_id: targetId });
+  if (error) return { error: serverErrorMessage(error) };
+  revalidatePath(`/users/${targetId}`);
+  revalidatePath('/home');
+  return {};
 }
 
 /** Gabung/keluar komunitas. Otorisasi sebenarnya ada di RPC; di sini sesi dan input divalidasi ulang. */

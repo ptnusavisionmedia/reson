@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { z } from 'zod';
 
 import { CommentSection } from '@/components/comment-section';
@@ -53,7 +54,7 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
       </p>
       <h1 className="text-2xl font-semibold">{post.title}</h1>
 
-      <div className="flex items-center gap-3">
+      <Link href={`/users/${post.authorId}`} className="flex w-fit items-center gap-3" aria-label={`Buka profil ${post.authorName}`}>
         {authorAvatar ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={authorAvatar} alt="" width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
@@ -69,7 +70,7 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
             {edited ? ' • diedit' : ''}
           </p>
         </div>
-      </div>
+      </Link>
 
       {(post.type === 'review' || post.type === 'showcase') && <PostDetailsView type={post.type} details={post.details} devices={devices} />}
       {post.body && <p className="whitespace-pre-wrap break-words text-base leading-7">{post.body}</p>}

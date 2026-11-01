@@ -15,7 +15,16 @@ export type PostItem = {
   authorUsername: string;
 };
 
-export type FeedSource = { kind: 'forYou' } | { kind: 'following' } | { kind: 'community'; communityId: string };
+export type FeedSource =
+  | { kind: 'forYou' }
+  | { kind: 'following' }
+  | { kind: 'community'; communityId: string }
+  | { kind: 'author'; authorId: string; type?: PostType }
+  | { kind: 'device'; deviceId: string; type: PostType }
+  | { kind: 'search'; q: string; type?: PostType };
+
+/** Karakter khusus LIKE (% _ \) di input pengguna diperlakukan sebagai teks biasa. */
+export const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
 
 export const PAGE_SIZE = 20;
 
@@ -61,10 +70,21 @@ export async function fetchFeedPage(
   source: FeedSource,
   after: PostItem | null,
 ): Promise<{ items: PostItem[]; error: boolean }> {
-  const base =
-    source.kind === 'community'
-      ? supabase.from('posts').select(SELECT).eq('community_id', source.communityId).eq('status', 'published')
-      : supabase.rpc(source.kind === 'forYou' ? 'feed_for_you' : 'feed_following').select(SELECT);
+  let base;
+  if (source.kind === 'community') {
+    base = supabase.from('posts').select(SELECT).eq('community_id', source.communityId).eq('status', 'published');
+  } else if (source.kind === 'author') {
+    base = supabase.from('posts').select(SELECT).eq('author_id', source.authorId).eq('status', 'published');
+    if (source.type) base = base.eq('type', source.type);
+  } else if (source.kind === 'device') {
+    base = supabase.from('posts').select(SELECT).contains('device_ids', [source.deviceId]).eq('type', source.type).eq('status', 'published');
+  } else if (source.kind === 'search') {
+    base = supabase.from('posts').select(SELECT).eq('status', 'published');
+    if (source.q) base = base.ilike('title_lower', `${escapeLike(source.q.toLowerCase())}%`);
+    if (source.type) base = base.eq('type', source.type);
+  } else {
+    base = supabase.rpc(source.kind === 'forYou' ? 'feed_for_you' : 'feed_following').select(SELECT);
+  }
 
   let q = (base as unknown as FeedQuery).order('created_at', { ascending: false }).order('id', { ascending: false }).limit(PAGE_SIZE);
   if (after) q = q.or(`created_at.lt.${after.createdAt},and(created_at.eq.${after.createdAt},id.lt.${after.id})`);

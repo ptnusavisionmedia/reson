@@ -9,7 +9,7 @@ import { safeReturnTo } from '@/lib/auth/return-to';
 import { createClient } from '@/lib/supabase/browser';
 import { fieldErrors, loginSchema } from '@shared/validation/auth';
 
-export function LoginForm({ returnTo, callbackError }: { returnTo: string | null; callbackError: boolean }) {
+export function LoginForm({ returnTo, callbackError, accountDeleted }: { returnTo: string | null; callbackError: boolean; accountDeleted: boolean }) {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [formError, setFormError] = useState<string | null>(
@@ -37,6 +37,11 @@ export function LoginForm({ returnTo, callbackError }: { returnTo: string | null
 
   return (
     <AuthShell title="Masuk">
+      {accountDeleted && (
+        <p role="status" className="rounded-md border border-line bg-surface p-3 text-sm text-muted">
+          Akunmu sudah dihapus.
+        </p>
+      )}
       <GoogleButton returnTo={returnTo} />
       <Divider>atau masuk dengan email</Divider>
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>

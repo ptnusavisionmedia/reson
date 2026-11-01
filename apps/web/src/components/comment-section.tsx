@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRef, useState } from 'react';
 
 import { addComment, removeComment, updateComment } from '@/app/actions';
@@ -124,7 +125,7 @@ export function CommentSection({ postId, currentUserId, tree, loadFailed }: { po
                   Balas
                 </button>
               )}
-              {own && (
+              {own ? (
                 <>
                   <button type="button" className={linkBtn} onClick={() => setEditing({ id: c.id, body: c.body })} disabled={busy}>
                     Edit
@@ -133,6 +134,10 @@ export function CommentSection({ postId, currentUserId, tree, loadFailed }: { po
                     Hapus
                   </button>
                 </>
+              ) : (
+                <Link href={`/report?targetType=comment&targetId=${c.id}`} className={`${linkBtn} flex items-center`}>
+                  Laporkan
+                </Link>
               )}
             </div>
           </>

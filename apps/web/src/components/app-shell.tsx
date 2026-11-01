@@ -1,3 +1,4 @@
+import { Settings } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
@@ -18,6 +19,10 @@ export function AppShell({ userId, username, children }: { userId: string; usern
         </div>
         <div className="flex flex-col gap-1">
           {username && <p className="hidden truncate px-3 text-sm text-muted lg:block">@{username}</p>}
+          <Link href="/settings" aria-label="Pengaturan" className="flex min-h-11 items-center gap-3 rounded-md px-3 text-muted hover:bg-surface hover:text-fg">
+            <Settings size={20} aria-hidden />
+            <span className="hidden lg:inline">Pengaturan</span>
+          </Link>
           <SignOutButton />
         </div>
       </aside>
@@ -26,7 +31,12 @@ export function AppShell({ userId, username, children }: { userId: string; usern
           <Link href="/home" className="font-mono text-sm tracking-widest text-accent">
             RESON
           </Link>
-          <MobileBell userId={userId} />
+          <div className="flex items-center">
+            <Link href="/settings" aria-label="Pengaturan" className="flex h-11 w-11 items-center justify-center rounded-md text-fg">
+              <Settings size={22} aria-hidden />
+            </Link>
+            <MobileBell userId={userId} />
+          </div>
         </header>
         <main className="mx-auto w-full max-w-2xl px-4 py-6 pb-24 md:pb-10">{children}</main>
       </div>

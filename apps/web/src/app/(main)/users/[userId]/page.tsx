@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { EmptyState } from '@/components/empty-state';
 import { FollowButton } from '@/components/follow-button';
+import { BlockControls } from '@/components/settings-client';
 import { PostFeed } from '@/components/post-feed';
 import { describeProfile } from '@/lib/data/match';
 import { fetchFeedPage } from '@/lib/data/posts';
@@ -28,10 +29,11 @@ export default async function UserPage({ params, searchParams }: { params: Promi
   const { data: auth } = await supabase.auth.getUser();
   const me = auth.user?.id ?? '';
 
-  const [prof, snd, follow] = await Promise.all([
+  const [prof, snd, follow, block] = await Promise.all([
     supabase.from('profiles').select('id, username, display_name, bio, avatar_path, follower_count, following_count').eq('id', userId).maybeSingle(),
     supabase.from('sound_profiles').select('genres, bass, vocals, treble, contexts, discoverable').eq('user_id', userId).maybeSingle(),
     supabase.from('follows').select('following_id').eq('follower_id', me).eq('following_id', userId).maybeSingle(),
+    supabase.from('blocks').select('blocked_id').eq('blocker_id', me).eq('blocked_id', userId).maybeSingle(),
   ]);
   if (prof.error) return <EmptyState title="Gagal memuat" message="Tidak bisa memuat profil. Muat ulang halaman untuk mencoba lagi." />;
   if (!prof.data) return missing;
@@ -66,12 +68,19 @@ export default async function UserPage({ params, searchParams }: { params: Promi
           {p.follower_count} pengikut • {p.following_count} mengikuti
         </p>
         {!isSelf && <FollowButton targetId={p.id} initialFollowing={!!follow.data} />}
+        {!isSelf && <BlockControls targetId={p.id} initialBlocked={!!block.data} />}
         {isSelf && (
-          <div className="flex flex-col gap-2">
-            <Link href="/settings/sound-profile" className="flex min-h-11 w-fit items-center rounded-md border border-line-strong px-5">
-              Ubah Sound Profile
-            </Link>
-            <p className="text-sm text-muted">Ubah foto, nama, dan bio masih lewat aplikasi.</p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { href: '/settings/profile', label: 'Ubah profil' },
+              { href: '/settings/sound-profile', label: 'Ubah Sound Profile' },
+              { href: '/saved', label: 'Tersimpan' },
+              { href: '/settings', label: 'Pengaturan' },
+            ].map((l) => (
+              <Link key={l.href} href={l.href} className="flex min-h-11 items-center rounded-md border border-line-strong px-4 text-sm">
+                {l.label}
+              </Link>
+            ))}
           </div>
         )}
       </header>

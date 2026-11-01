@@ -89,6 +89,11 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
         <LikeButton postId={post.id} initialLiked={!!like.data} initialCount={post.likeCount} />
         <SaveButton postId={post.id} initialSaved={!!saved.data} />
         {isAuthor && <DeletePostButton postId={post.id} />}
+        {!isAuthor && (
+          <Link href={`/report?targetType=post&targetId=${post.id}`} className="flex min-h-11 items-center rounded-md border border-line-strong px-4">
+            Laporkan post
+          </Link>
+        )}
       </div>
 
       <p className="text-sm text-muted">{post.commentCount} komentar</p>

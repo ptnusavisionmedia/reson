@@ -18,6 +18,7 @@
       "@/*": ["./src/*"],
       "@shared/*": ["../../shared/*"],
       "@utils/*": ["../../src/utils/*"],
+      "@account/*": ["../../src/features/account/*"],
       "@db": ["../../src/types/database.ts"]
     }
   },

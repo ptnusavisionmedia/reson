@@ -8,6 +8,7 @@ import { refreshMatches } from '@/lib/data/match';
 import { createClient } from '@/lib/supabase/server';
 import type { Json } from '@db';
 import { bodyRequiredError, POST_LIMITS, postInputSchema, TEXT_REQUIRED_TYPES } from '@shared/validation/post';
+import { profileEditSchema } from '@shared/validation/profile';
 import { reviewDetailsSchema, showcaseDetailsSchema } from '@shared/validation/postDetails';
 import { soundProfileSchema, type SoundProfileInput } from '@shared/validation/soundProfile';
 import { serverErrorMessage } from '@utils/errors';
@@ -188,6 +189,58 @@ export async function markAllNotificationsRead(): Promise<ActionResult> {
   if (a.error !== undefined) return { error: a.error };
   const { error } = await a.supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('user_id', a.userId).is('read_at', null);
   return error ? { error: 'Gagal menandai semua dibaca. Coba lagi.' } : {};
+}
+
+export async function setNotificationPrefs(prefs: Record<string, boolean>): Promise<ActionResult> {
+  const parsed = z.object({ follow: z.boolean(), comment: z.boolean(), reply: z.boolean() }).safeParse(prefs);
+  if (!parsed.success) return { error: 'Pengaturan tidak valid.' };
+  const a = await authed();
+  if (a.error !== undefined) return { error: a.error };
+  const { error } = await a.supabase.rpc('update_notification_preferences', { p_prefs: parsed.data });
+  return error ? { error: 'Gagal menyimpan. Periksa koneksi lalu coba lagi.' } : {};
+}
+
+/** Blokir memutus follow di kedua arah dan menyembunyikan konten; ditegakkan di server lewat RLS. */
+export async function setBlock(targetId: string, block: boolean): Promise<ActionResult> {
+  const a = await authed(targetId);
+  if (a.error !== undefined) return { error: a.error };
+  const { error } = block
+    ? await a.supabase.rpc('block_user', { p_user_id: targetId })
+    : await a.supabase.rpc('unblock_user', { p_user_id: targetId });
+  if (error) return { error: serverErrorMessage(error) };
+  revalidatePath(`/users/${targetId}`);
+  revalidatePath('/settings/blocked');
+  revalidatePath('/home');
+  return {};
+}
+
+/** Laporan ganda yang masih terbuka diabaikan server. */
+export async function submitReport(targetType: 'post' | 'comment' | 'user', targetId: string, reason: string): Promise<ActionResult> {
+  if (!['post', 'comment', 'user'].includes(targetType)) return { error: 'Laporan tidak valid.' };
+  const text = reason.trim().slice(0, 500);
+  if (!text) return { error: 'Pilih alasan terlebih dahulu.' };
+  const a = await authed(targetId);
+  if (a.error !== undefined) return { error: a.error };
+  const { error } = await a.supabase.rpc('create_report', { p_target_type: targetType, p_target_id: targetId, p_reason: text });
+  return error ? { error: serverErrorMessage(error) } : {};
+}
+
+/** Avatar baru harus berada di folder milik pengguna ini. */
+export async function saveProfile(input: { displayName: string; bio: string; avatarPath: string | null }): Promise<ActionResult> {
+  const parsed = profileEditSchema.safeParse({ displayName: input.displayName, bio: input.bio });
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const a = await authed();
+  if (a.error !== undefined) return { error: a.error };
+  if (input.avatarPath !== null && !input.avatarPath.startsWith(`${a.userId}/`)) return { error: 'Foto tidak valid. Pilih foto lain.' };
+  const { error } = await a.supabase.rpc('update_my_profile', {
+    p_display_name: parsed.data.displayName,
+    p_bio: parsed.data.bio,
+    p_avatar_path: input.avatarPath as string,
+  });
+  if (error) return { error: 'Gagal menyimpan profil. Periksa koneksi lalu coba lagi.' };
+  revalidatePath(`/users/${a.userId}`);
+  revalidatePath('/settings/profile');
+  return {};
 }
 
 /** Perbarui Match secara paksa. Server tetap menerapkan batas laju dan menjawab 'cooldown'. */

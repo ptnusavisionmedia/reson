@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 import type { Database } from '@db';
 
-const PUBLIC = ['/', '/login', '/register', '/forgot-password', '/update-password', '/privacy', '/delete-account'];
+const PUBLIC = ['/', '/robots.txt', '/login', '/register', '/forgot-password', '/update-password', '/privacy', '/delete-account'];
 const isPublic = (p: string) => PUBLIC.includes(p) || p.startsWith('/auth/');
 
 /** Segarkan cookie sesi di setiap request dan jaga rute privat. Otorisasi data tetap di RLS/RPC. */

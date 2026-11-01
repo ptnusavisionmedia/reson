@@ -6,6 +6,7 @@ import { Screen } from '@/components/layout/Screen';
 import { Button, Input } from '@/components/ui';
 import { Logo } from '@/components/ui/Logo';
 import { authErrorMessage } from '@/features/auth/errors';
+import { GoogleButton, OrDivider } from '@/features/auth/GoogleButton';
 import { supabase } from '@/lib/supabase/client';
 import { colors, spacing } from '@/theme';
 import { fieldErrors, registerSchema } from '@shared/validation/auth';
@@ -49,6 +50,8 @@ export default function Register() {
         <Logo size={56} />
       </View>
       <Text accessibilityRole="header" style={{ color: colors.text, fontSize: 24, fontWeight: '600' }}>Daftar</Text>
+      <GoogleButton />
+      <OrDivider label="atau daftar dengan email" />
       <Input label="Nama tampilan" value={form.displayName} onChangeText={set('displayName')} error={errors.displayName} />
       <Input label="Username (tidak bisa diganti nanti)" value={form.username} onChangeText={set('username')} error={errors.username} autoCapitalize="none" autoCorrect={false} />
       <Input label="Email" value={form.email} onChangeText={set('email')} error={errors.email} autoCapitalize="none" keyboardType="email-address" autoComplete="email" />

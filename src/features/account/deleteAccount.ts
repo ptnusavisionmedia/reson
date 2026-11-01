@@ -1,3 +1,4 @@
+import { signInWithGoogle } from '@/features/auth/google';
 import { clearAllDrafts } from '@/features/posts/draft';
 import { clearSignedUrlCache } from '@/features/posts/useSignedUrls';
 import { supabase } from '@/lib/supabase/client';
@@ -65,17 +66,36 @@ export async function resumeAccountDeletion(uid: string, onProgress?: (s: Deleti
   return null;
 }
 
+export type Reauth = { kind: 'password'; email: string; password: string } | { kind: 'google'; email?: string };
+
+/** Login ulang yang membuat sesi baru. Google: UID yang kembali harus sama dengan akun target. */
+async function reauthenticate(uid: string, reauth: Reauth): Promise<string | null> {
+  if (reauth.kind === 'password') {
+    const res = await supabase.auth.signInWithPassword({ email: reauth.email, password: reauth.password });
+    return res.error ? 'Password salah.' : null;
+  }
+  const result = await signInWithGoogle(reauth.email);
+  if (result.status === 'cancelled') return 'Verifikasi Google dibatalkan.';
+  if (result.status === 'error') return result.message;
+  if (result.userId !== uid) {
+    // Sesi sekarang milik akun Google lain: akhiri dan jangan hapus akun mana pun.
+    await supabase.auth.signOut({ scope: 'local' });
+    return 'Akun Google yang dipilih berbeda dari akun ini. Tidak ada akun yang dihapus; silakan masuk lagi.';
+  }
+  return null;
+}
+
 /**
- * Memulai penghapusan: login ulang dengan password (membuat sesi baru yang dibuktikan ke server),
+ * Memulai penghapusan: login ulang (membuat sesi baru yang dibuktikan ke server, password atau Google),
  * menandai akun 'deleting', lalu menjalankan seluruh tahap. null = akun sudah terhapus.
  */
-export async function startAccountDeletion(email: string, uid: string, password: string, onProgress?: (s: DeletionStage) => void): Promise<string | null> {
-  const reauth = await supabase.auth.signInWithPassword({ email, password });
-  if (reauth.error) return 'Password salah.';
+export async function startAccountDeletion(uid: string, reauth: Reauth, onProgress?: (s: DeletionStage) => void): Promise<string | null> {
+  const reauthError = await reauthenticate(uid, reauth);
+  if (reauthError) return reauthError;
   const { error } = await supabase.rpc('request_account_deletion');
   if (error) {
     return error.message.includes('reauth required')
-      ? 'Sesi belum cukup baru. Masukkan password lagi.'
+      ? 'Sesi belum cukup baru. Verifikasi ulang lalu coba lagi.'
       : 'Tidak bisa memulai penghapusan. Periksa koneksi lalu coba lagi.';
   }
   return resumeAccountDeletion(uid, onProgress);

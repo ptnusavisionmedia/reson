@@ -13,6 +13,8 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
+    // OAuth (Google) memakai PKCE: kode ditukar manual lewat exchangeCodeForSession.
+    flowType: 'pkce',
   },
 });
 

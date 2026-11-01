@@ -13,6 +13,8 @@ type AuthState = {
   session: Session | null;
   emailVerified: boolean;
   onboardingCompleted: boolean;
+  /** false = akun Google baru yang belum memilih username final. */
+  profileCompleted: boolean;
   introSeen: boolean;
   /** Hanya untuk menampilkan menu; hak akses sebenarnya dicek di server (is_staff). */
   isStaff: boolean;
@@ -32,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
   // Data akun dikaitkan dengan userId pemiliknya; data milik akun lain/logout otomatis dianggap kosong.
-  const [loaded, setLoaded] = useState<{ userId: string; onboardingCompleted: boolean; introSeen: boolean; isStaff: boolean; status: string; profile: Profile } | null>(null);
+  const [loaded, setLoaded] = useState<{ userId: string; onboardingCompleted: boolean; profileCompleted: boolean; introSeen: boolean; isStaff: boolean; status: string; profile: Profile } | null>(null);
   const [failedFor, setFailedFor] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
 
@@ -55,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     (async () => {
       const [acc, prof] = await Promise.all([
-        supabase.from('accounts').select('onboarding_completed, intro_seen, role').eq('id', userId).single(),
+        supabase.from('accounts').select('onboarding_completed, profile_completed, intro_seen, role').eq('id', userId).single(),
         supabase.from('profiles').select('username, display_name, status').eq('id', userId).single(),
       ]);
       if (cancelled) return;
@@ -63,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoaded({
         userId,
         onboardingCompleted: acc.data.onboarding_completed,
+        profileCompleted: acc.data.profile_completed,
         introSeen: acc.data.intro_seen,
         isStaff: acc.data.role === 'moderator' || acc.data.role === 'admin',
         status: prof.data.status,
@@ -101,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       emailVerified: !!session?.user.email_confirmed_at,
       onboardingCompleted: account?.onboardingCompleted ?? false,
+      profileCompleted: account?.profileCompleted ?? true,
       introSeen: account?.introSeen ?? false,
       isStaff: account?.isStaff ?? false,
       accountStatus: account?.status ?? 'active',

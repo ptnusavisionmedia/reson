@@ -14,7 +14,7 @@ import { colors } from '@/theme';
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
-  const { loading, bootstrapError, retry, session, onboardingCompleted, accountStatus } = useAuth();
+  const { loading, bootstrapError, retry, session, onboardingCompleted, profileCompleted, accountStatus } = useAuth();
 
   useEffect(() => {
     if (!loading || bootstrapError) SplashScreen.hideAsync();
@@ -46,10 +46,13 @@ function RootNavigator() {
       <Stack.Protected guard={!session}>
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
-      <Stack.Protected guard={!!session && !onboardingCompleted}>
+      <Stack.Protected guard={!!session && !profileCompleted}>
+        <Stack.Screen name="complete-profile" />
+      </Stack.Protected>
+      <Stack.Protected guard={!!session && profileCompleted && !onboardingCompleted}>
         <Stack.Screen name="(onboarding)" />
       </Stack.Protected>
-      <Stack.Protected guard={!!session && onboardingCompleted}>
+      <Stack.Protected guard={!!session && profileCompleted && onboardingCompleted}>
         <Stack.Screen name="(main)" />
       </Stack.Protected>
     </Stack>

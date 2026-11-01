@@ -13,5 +13,5 @@ const resolverRules = Object.fromEntries(
 module.exports = defineConfig([
   expoConfig,
   { rules: resolverRules },
-  { ignores: ['dist/*', '.expo/*', 'supabase/*', 'src/types/database.ts'] },
+  { ignores: ['apps/*', 'dist/*', '.expo/*', 'supabase/*', 'src/types/database.ts'] },
 ]);
